@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.gradient-circle {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.12;
+}
+
+.top-left {
+  top: -200px;
+  left: -200px;
+  background: #06b6d4;
+}
+
+.bottom-right {
+  bottom: -200px;
+  right: -200px;
+  background: #3b82f6;
+}
