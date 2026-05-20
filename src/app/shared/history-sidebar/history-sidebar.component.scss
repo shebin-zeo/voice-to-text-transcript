@@ -1,0 +1,70 @@
+:host-context(.dark) .result-card {
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(.dark) .result-body {
+  color: #cbd5e1;
+}
+
+:host-context(.dark) .result-title {
+  color: #fff;
+}
+
+:host-context(.dark) .action-btn.neutral-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+:host-context(.dark) .action-btn.neutral-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+:host-context(.dark) .action-btn.red-btn {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+:host-context(.dark) .action-btn.cyan-btn {
+  background: rgba(6, 182, 212, 0.12);
+  color: rgb(103 232 249);
+}
+
+:host-context(.dark) .action-btn.blue-btn {
+  background: rgba(59, 130, 246, 0.12);
+  color: rgb(147 197 253);
+}
+
+:host-context(.dark) .cyan-card,
+:host-context(.dark) .blue-card {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+:host-context(.dark) .lang-badge {
+  color: #fff;
+}
+
+/* Firefox */
+.history-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 211, 238, 0.35) transparent;
+}
+
+/* Chrome / Edge / Safari */
+.history-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-scroll::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.25);
+  border-radius: 999px;
+  transition: background 0.3s ease;
+}
+
+.history-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.45);
+}

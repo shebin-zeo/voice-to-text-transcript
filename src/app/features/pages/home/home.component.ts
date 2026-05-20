@@ -5,13 +5,16 @@ import { AudioResponse } from '../../../core/model/response.model';
 import { RouterLink } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { HistorySidebarComponent,HistoryItem } from '../../../shared/history-sidebar/history-sidebar.component';
+import { ThemeService } from '../../../core/services/theme.service';
+
 
 
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule,RouterLink,ToastModule],
+  imports: [CommonModule,RouterLink,ToastModule, HistorySidebarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   providers:[MessageService]
@@ -55,7 +58,9 @@ currentAudio!: HTMLAudioElement;
 
   constructor(
     private transcriptionService: TranscriptionService,
-    private messageService:MessageService
+    private messageService:MessageService,
+    public themeService: ThemeService
+
   ) {}
 
 
@@ -284,6 +289,11 @@ currentAudio!: HTMLAudioElement;
             || 'Failed to process audio';
 
           this.isProcessing = false;
+          this.messageService.add({
+            severity:'warning',
+            detail:'API Limit is Exceeded',
+            summary:error.error.Message
+          })
 
         }
 
@@ -296,7 +306,10 @@ currentAudio!: HTMLAudioElement;
 
   if (!this.englishText) {
 
-    alert('No English text available');
+    this.messageService.add({
+      severity:'info',
+      detail:'No English text available',
+    })
 
     return;
 
@@ -314,7 +327,7 @@ currentAudio!: HTMLAudioElement;
 
   // SETTINGS
 
-  speech.lang = 'en-US';
+  speech.lang = 'zh-CN';
 
   speech.rate = 1;
 
@@ -332,7 +345,10 @@ playOriginalAudio() {
 
   if (!this.audioUrl) {
 
-    alert('No audio available');
+    this.messageService.add({
+      severity:'info',
+      detail:'No Audio Available'
+    })
 
     return;
 
@@ -379,4 +395,33 @@ stopAudio() {
 
 }
 
+loadHistory(item: HistoryItem): void {
+  // Reset processing & old audio
+  this.isProcessing = false;
+  this.audioUrl = null;
+  this.selectedFileName = null;
+
+  // Load the selected history text
+  this.malayalamText = item.malayalamText;
+  this.englishText   = item.englishText;
+
+  // Scroll results into view smoothly
+  setTimeout(() => {
+    document.getElementById('results-section')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+}
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  isSidebarOpen = true;
+
+toggleSidebar(): void {
+
+  this.isSidebarOpen =
+    !this.isSidebarOpen;
+
+}
 }

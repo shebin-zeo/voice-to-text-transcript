@@ -1,190 +1,260 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white overflow-hidden">
+<div
+  class="flex h-screen overflow-hidden bg-slate-100 text-slate-900 transition-colors duration-300 dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-black dark:text-white">
 
-  <p-toast></p-toast>
+  <div
+    [ngClass]="{
+      'w-[320px] opacity-100': isSidebarOpen,
+      'w-0 opacity-0 overflow-hidden': !isSidebarOpen
+    }"
+    class="transition-all duration-300">
 
-  <!-- Background -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="gradient-circle top-left"></div>
-    <div class="gradient-circle bottom-right"></div>
+    <app-history-sidebar
+      (selectHistory)="loadHistory($event)">
+    </app-history-sidebar>
+
   </div>
 
-  <!-- Main -->
-  <div class="relative z-10 max-w-7xl mx-auto px-6 pb-16">
+  <div class="relative flex-1 overflow-y-auto">
 
-    <!-- Top Navigation -->
-    <div class="flex justify-end pt-6 mb-8">
-      <button
-        routerLink="/history"
-        class="group flex items-center gap-3 rounded-2xl border border-cyan-500/20 bg-white/5 px-6 py-3 text-sm font-semibold text-cyan-300 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white">
-        <svg xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 transition-transform duration-300 group-hover:rotate-12"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        View History
-      </button>
+    <p-toast></p-toast>
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="gradient-circle top-left"></div>
+      <div class="gradient-circle bottom-right"></div>
     </div>
 
-    <!-- Hero -->
-    <div class="text-center mb-16">
-      <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tight mb-6">
-        Convert
-        <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500 bg-clip-text text-transparent">
-          Malayalam Audio
-        </span>
-        Into Professional English
-      </h1>
-      <p class="max-w-3xl mx-auto text-slate-400 text-lg md:text-xl leading-8">
-        Upload or record Malayalam audio and instantly receive
-        AI-powered English transcription and translation.
-      </p>
-    </div>
+    <div class="sticky top-0 z-50 bg-slate-100/40 backdrop-blur-md dark:bg-slate-950/40">
+      <div class="mx-auto max-w-5xl px-6 pt-6 pb-2">
+        <div
+          class="flex items-center justify-between
+                 rounded-3xl
+                 border border-slate-200 dark:border-white/10
+                 bg-white/90 dark:bg-slate-900/80
+                 backdrop-blur-2xl
+                 px-5 py-4
+                 shadow-lg shadow-black/5">
 
-    <!-- ── Upload Card (constrained width) ── -->
-    <div class="max-w-4xl mx-auto rounded-[2rem] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl shadow-cyan-500/5 p-8 md:p-12">
-
-      <!-- Upload Area -->
-      <div
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (drop)="onDrop($event)"
-        [ngClass]="{ 'border-cyan-400 bg-cyan-500/10 scale-[1.01]': isDragging }"
-        class="border-2 border-dashed border-slate-700 rounded-3xl p-12 md:p-16 text-center transition-all duration-300">
-
-        <!-- Upload Icon -->
-        <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center mb-8">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-cyan-400"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-          </svg>
-        </div>
-
-        <h2 class="text-3xl font-bold mb-4">Upload Malayalam Audio</h2>
-        <p class="text-slate-400 mb-10 text-lg">Drag & drop your audio file or record live audio</p>
-
-        <input #fileInput type="file" class="hidden" accept="audio/*" (change)="onFileSelected($event)" />
-
-        <div class="flex flex-col md:flex-row items-center justify-center gap-5">
           <button
-            (click)="fileInput.click()"
-            class="px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:scale-105 transition-all duration-300 shadow-xl shadow-cyan-500/20">
-            Browse Audio
+            (click)="toggleSidebar()"
+            class="flex h-12 w-12 items-center justify-center
+                   rounded-2xl
+                   border border-slate-200 dark:border-white/10
+                   bg-white/80 dark:bg-white/5
+                   text-slate-800 dark:text-white
+                   transition-all duration-300
+                   hover:scale-105
+                   hover:bg-slate-100
+                   dark:hover:bg-white/10">
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
 
-          <button *ngIf="!isRecording" (click)="startRecording()"
-            class="px-8 py-4 rounded-2xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all duration-300 font-semibold">
-            🎙 Start Recording
+          <button
+            (click)="toggleTheme()"
+            class="flex items-center gap-3
+                   rounded-2xl
+                   border border-slate-200 dark:border-white/10
+                   bg-white/80 dark:bg-white/5
+                   px-5 py-3
+                   text-sm font-semibold
+                   text-slate-700 dark:text-cyan-300
+                   transition-all duration-300
+                   hover:scale-105
+                   hover:bg-slate-100
+                   dark:hover:bg-cyan-500/10
+                   dark:hover:text-white">
+
+            <span *ngIf="themeService.isDarkMode()">
+              ☀️ Light Mode
+            </span>
+
+            <span *ngIf="!themeService.isDarkMode()">
+              🌙 Dark Mode
+            </span>
           </button>
 
-          <button *ngIf="isRecording" (click)="stopRecording()"
-            class="px-8 py-4 rounded-2xl bg-red-500 hover:bg-red-400 transition-all duration-300 font-bold animate-pulse">
-            ⏹ Stop Recording
-          </button>
         </div>
-
-        <!-- File Name -->
-        <div *ngIf="selectedFileName"
-          class="mt-8 inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-          <span class="text-lg">✓</span>
-          {{ selectedFileName }}
-        </div>
-
-        <!-- Audio Preview -->
-        <div class="mt-8">
-          <audio class="w-full rounded-xl" *ngIf="audioUrl" [src]="audioUrl" controls></audio>
-        </div>
-
-        <!-- Translate Button -->
-        <button *ngIf="selectedFileName" (click)="processAudio()"
-          class="mt-8 w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:scale-[1.01] transition-all duration-300 shadow-lg shadow-cyan-500/20">
-          Translate Audio
-        </button>
       </div>
-
-      <!-- Processing -->
-      <div *ngIf="isProcessing" class="mt-12 text-center">
-        <div class="inline-flex items-center gap-4 px-6 py-4 rounded-2xl bg-slate-900/70 border border-white/10">
-          <div class="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-          <span class="text-slate-300">Processing Audio...</span>
-        </div>
-      </div>
-
     </div>
-    <!-- ── End Upload Card ── -->
 
+    <div class="relative z-10 mx-auto max-w-5xl px-6 pb-16">
 
-    <!-- ── Results Grid (FULL max-w-7xl width, OUTSIDE upload card) ── -->
-    <div *ngIf="!isProcessing && englishText"
-      class="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-10">
-
-      <!-- MALAYALAM CARD -->
-      <div class="result-card" style="--accent: rgba(6,182,212,0.15); --border: rgba(6,182,212,0.18);">
-        <div class="result-header">
-          <div class="result-header-top">
-            <span class="lang-badge cyan-badge">ML</span>
-            <h3 class="result-title cyan-title">Malayalam Transcript</h3>
-          </div>
-          <div class="action-group">
-            <button (click)="playOriginalAudio()" class="action-btn cyan-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-              </svg>
-              Play
-            </button>
-            <button (click)="stopAudio()" class="action-btn red-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
-              </svg>
-              Stop
-            </button>
-            <button (click)="copyText(malayalamText)" class="action-btn neutral-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-              </svg>
-              Copy
-            </button>
-          </div>
-        </div>
-        <div class="result-body">{{ malayalamText }}</div>
+      <div class="mb-12 pt-8 text-center">
+        <h1 class="mb-5 text-5xl font-black leading-tight tracking-tight md:text-6xl">
+          Convert
+          <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-500 bg-clip-text text-transparent">
+            Malayalam Audio
+          </span>
+          Into Professional English
+        </h1>
+        <p class="mx-auto max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-400">
+          Upload or record Malayalam audio and instantly receive AI-powered English transcription and translation.
+        </p>
       </div>
 
-      <!-- ENGLISH CARD -->
-      <div class="result-card" style="--accent: rgba(59,130,246,0.15); --border: rgba(59,130,246,0.18);">
-        <div class="result-header">
-          <div class="result-header-top">
-            <span class="lang-badge blue-badge">EN</span>
-            <h3 class="result-title blue-title">English Translation</h3>
+      <div class="rounded-[2rem] border border-slate-200 bg-white/80 p-8 shadow-2xl shadow-cyan-500/5 backdrop-blur-2xl dark:border-white/10 dark:bg-white/5 md:p-12">
+        <div
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          [ngClass]="{ 'border-cyan-400 bg-cyan-500/10 scale-[1.01]': isDragging }"
+          class="rounded-3xl border-2 border-dashed border-slate-300 p-12 text-center transition-all duration-300 dark:border-slate-700 md:p-16">
+
+          <div class="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl border border-cyan-500/20 bg-gradient-to-r from-cyan-500/20 to-blue-500/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
           </div>
-          <div class="action-group">
-            <button (click)="speakEnglishText()" class="action-btn blue-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-              </svg>
-              Play
+
+          <h2 class="mb-4 text-3xl font-bold text-slate-900 dark:text-white">
+            Upload Malayalam Audio
+          </h2>
+
+          <p class="mb-10 text-lg text-slate-600 dark:text-slate-400">
+            Drag &amp; drop your audio file or record live audio
+          </p>
+
+          <input #fileInput type="file" class="hidden" accept="audio/*" (change)="onFileSelected($event)" />
+
+          <div class="flex flex-col items-center justify-center gap-5 md:flex-row">
+            <button
+              (click)="fileInput.click()"
+              class="rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-4 font-bold text-black shadow-xl shadow-cyan-500/20 transition-all duration-300 hover:scale-105">
+              Browse Audio
             </button>
-            <button (click)="stopAudio()" class="action-btn red-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
-              </svg>
-              Stop
+
+            <button
+              *ngIf="!isRecording"
+              (click)="startRecording()"
+              class="rounded-2xl border border-red-500/30 bg-red-500/10 px-8 py-4 font-semibold transition-all duration-300 hover:bg-red-500/20 dark:text-white">
+              🎙 Start Recording
             </button>
-            <button (click)="copyText(englishText)" class="action-btn neutral-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-              </svg>
-              Copy
+
+            <button
+              *ngIf="isRecording"
+              (click)="stopRecording()"
+              class="animate-pulse rounded-2xl bg-red-500 px-8 py-4 font-bold transition-all duration-300 hover:bg-red-400">
+              ⏹ Stop Recording
             </button>
+          </div>
+
+          <div
+            *ngIf="selectedFileName"
+            class="mt-8 inline-flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-100 px-5 py-3 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+            <span class="text-lg">✓</span>
+            {{ selectedFileName }}
+          </div>
+
+          <div class="mt-8" *ngIf="audioUrl">
+            <audio class="w-full rounded-xl" [src]="audioUrl" controls></audio>
+          </div>
+
+          <button
+            *ngIf="selectedFileName && !isProcessing"
+            (click)="processAudio()"
+            class="mt-8 w-full rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 py-4 font-bold text-black shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.01]">
+            Translate Audio
+          </button>
+
+          <div *ngIf="isProcessing" class="mt-6 flex items-center justify-center gap-3 py-4">
+            <div class="h-5 w-5 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent"></div>
+            <span class="text-sm text-slate-600 dark:text-slate-300">Processing audio…</span>
           </div>
         </div>
-        <div class="result-body">{{ englishText }}</div>
       </div>
 
+      <div
+        id="results-section"
+        *ngIf="!isProcessing && (malayalamText || englishText)"
+        class="results-grid mt-8">
+
+        <div class="result-card cyan-card">
+          <div class="result-header">
+            <div class="result-header-left">
+              <span class="lang-badge cyan-badge">ML</span>
+              <h3 class="result-title cyan-title">Malayalam Transcript</h3>
+            </div>
+            <div class="result-actions">
+              <button (click)="playOriginalAudio()" class="action-btn cyan-btn">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                    clip-rule="evenodd" />
+                </svg>
+                Play
+              </button>
+              <button (click)="stopAudio()" class="action-btn red-btn">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                    clip-rule="evenodd" />
+                </svg>
+                Stop
+              </button>
+              <button (click)="copyText(malayalamText)" class="action-btn neutral-btn">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                  <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                </svg>
+                Copy
+              </button>
+            </div>
+          </div>
+          <div class="result-body">{{ malayalamText }}</div>
+        </div>
+
+        <div class="result-card blue-card">
+          <div class="result-header">
+            <div class="result-header-left">
+              <span class="lang-badge blue-badge">EN</span>
+              <h3 class="result-title blue-title">English Translation</h3>
+            </div>
+            <div class="result-actions">
+              <button (click)="speakEnglishText()" class="action-btn blue-btn">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                    clip-rule="evenodd" />
+                </svg>
+                Play
+              </button>
+              <button (click)="stopAudio()" class="action-btn red-btn">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
+                    clip-rule="evenodd" />
+                </svg>
+                Stop
+              </button>
+              <button (click)="copyText(englishText)" class="action-btn neutral-btn">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                  <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                </svg>
+                Copy
+              </button>
+            </div>
+          </div>
+          <div class="result-body">{{ englishText }}</div>
+        </div>
+
+      </div>
     </div>
-    <!-- ── End Results Grid ── -->
 
   </div>
 </div>
