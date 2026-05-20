@@ -4,5 +4,9 @@ export interface AudioResponse{
     fileSize:number,
     message:string,
     malayalamText:string,
-    englishText:string
+    englishText:string,
+    englishAudioUrl:string,
+    malayalamAudioUrl:string
+
+
 }
