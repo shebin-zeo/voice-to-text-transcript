@@ -38,10 +38,7 @@ export class HistoryComponent implements OnInit {
     this.loadData();
   }
 
-  // -----------------------------------------
-  // Dummy Data
-  // Replace with API Response
-  // -----------------------------------------
+ 
   loadData(): void {
 
 

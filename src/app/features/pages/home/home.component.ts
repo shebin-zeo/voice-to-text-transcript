@@ -32,6 +32,10 @@ export class HomeComponent {
   englishText = '';
 
 
+
+currentAudio!: HTMLAudioElement;
+
+
   isDragging = false;
 
   isRecording = false;
@@ -70,6 +74,11 @@ export class HomeComponent {
 
     this.isDragging = false;
 
+  }
+
+  ngOnInit():void{
+    console.log('Date',
+  speechSynthesis.getVoices());
   }
 
 
@@ -261,7 +270,8 @@ export class HomeComponent {
           this.englishText =
             response.englishText;
 
-          this.isProcessing = false;
+            this.isProcessing=false;
+       
 
         },
 
@@ -280,5 +290,93 @@ export class HomeComponent {
       });
 
   }
+
+
+  speakEnglishText() {
+
+  if (!this.englishText) {
+
+    alert('No English text available');
+
+    return;
+
+  }
+
+  // STOP PREVIOUS SPEECH
+
+  window.speechSynthesis.cancel();
+
+  // CREATE SPEECH
+
+  const speech = new SpeechSynthesisUtterance(
+    this.englishText
+  );
+
+  // SETTINGS
+
+  speech.lang = 'en-US';
+
+  speech.rate = 1;
+
+  speech.pitch = 1;
+
+  speech.volume = 1;
+
+  // PLAY
+
+  window.speechSynthesis.speak(speech);
+
+}
+
+playOriginalAudio() {
+
+  if (!this.audioUrl) {
+
+    alert('No audio available');
+
+    return;
+
+  }
+
+  // STOP ENGLISH TTS
+
+  window.speechSynthesis.cancel();
+
+  // STOP PREVIOUS AUDIO
+
+  if (this.currentAudio) {
+
+    this.currentAudio.pause();
+
+    this.currentAudio.currentTime = 0;
+
+  }
+
+  // PLAY ORIGINAL AUDIO
+
+  this.currentAudio =
+    new Audio(this.audioUrl);
+
+  this.currentAudio.play();
+
+}
+
+stopAudio() {
+
+  // STOP SPEECH
+
+  window.speechSynthesis.cancel();
+
+  // STOP AUDIO
+
+  if (this.currentAudio) {
+
+    this.currentAudio.pause();
+
+    this.currentAudio.currentTime = 0;
+
+  }
+
+}
 
 }
