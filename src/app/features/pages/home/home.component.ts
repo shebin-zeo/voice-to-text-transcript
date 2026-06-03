@@ -1,0 +1,427 @@
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { TranscriptionService } from '../../../core/services/transcription.service';
+import { AudioResponse } from '../../../core/model/response.model';
+import { RouterLink } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { HistorySidebarComponent,HistoryItem } from '../../../shared/history-sidebar/history-sidebar.component';
+import { ThemeService } from '../../../core/services/theme.service';
+
+
+
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule,RouterLink,ToastModule, HistorySidebarComponent],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss',
+  providers:[MessageService]
+})
+export class HomeComponent {
+
+
+  selectedFileName: string | null = null;
+
+  audioUrl: string | null = null;
+
+  selectedFile!: File;
+
+
+
+  malayalamText = '';
+
+  englishText = '';
+
+
+
+currentAudio!: HTMLAudioElement;
+
+
+  isDragging = false;
+
+  isRecording = false;
+
+  isProcessing = false;
+
+  errorMessage = '';
+
+
+  mediaRecorder!: MediaRecorder;
+
+  audioChunks: Blob[] = [];
+
+  recordedBlob!: Blob;
+
+
+
+  constructor(
+    private transcriptionService: TranscriptionService,
+    private messageService:MessageService,
+    public themeService: ThemeService
+
+  ) {}
+
+
+
+  onDragOver(event: DragEvent) {
+
+    event.preventDefault();
+
+    this.isDragging = true;
+
+  }
+
+  onDragLeave(event: DragEvent) {
+
+    event.preventDefault();
+
+    this.isDragging = false;
+
+  }
+
+  ngOnInit():void{
+    console.log('Date',
+  speechSynthesis.getVoices());
+  }
+
+
+
+  onDrop(event: DragEvent) {
+
+    event.preventDefault();
+
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files?.length) {
+
+      const file =
+        event.dataTransfer.files[0];
+
+      this.handleSelectedFile(file);
+
+    }
+
+  }
+
+  
+
+  onFileSelected(event: Event) {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+
+      const file = input.files[0];
+
+      this.handleSelectedFile(file);
+
+    }
+
+  }
+
+  
+
+  handleSelectedFile(file: File) {
+
+    // RESET OLD RESULTS
+
+    this.malayalamText = '';
+
+    this.englishText = '';
+
+    this.errorMessage = '';
+
+    this.selectedFile = file;
+
+    this.selectedFileName = file.name;
+
+    // this.audioUrl =
+    //   URL.createObjectURL(file);
+
+    // Create NEW preview
+  this.audioUrl = URL.createObjectURL(file);
+
+       this.messageService.add({
+    severity: 'success',
+    summary: 'Upload Success',
+    detail: `${file.name} uploaded successfully`
+  });
+
+  }
+
+
+  async startRecording() {
+
+    try {
+
+      const stream =
+        await navigator.mediaDevices
+          .getUserMedia({
+            audio: true
+          });
+
+      this.audioChunks = [];
+
+      this.mediaRecorder =
+        new MediaRecorder(stream);
+
+      this.mediaRecorder.start();
+
+      this.isRecording = true;
+
+      this.mediaRecorder.addEventListener(
+        'dataavailable',
+        (event) => {
+
+          this.audioChunks.push(event.data);
+
+        }
+      );
+
+      this.mediaRecorder.addEventListener(
+        'stop',
+        () => {
+
+          this.recordedBlob = new Blob(
+            this.audioChunks,
+            {
+              type: 'audio/webm'
+            }
+          );
+
+          this.audioUrl =
+            URL.createObjectURL(
+              this.recordedBlob
+            );
+
+          this.selectedFileName =
+            'recorded-audio.webm';
+
+          this.selectedFile = new File(
+            [this.recordedBlob],
+            'recorded-audio.webm',
+            {
+              type: 'audio/webm'
+            }
+          );
+
+        }
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        'Please allow microphone permission'
+      );
+
+    }
+
+  }
+
+
+
+  stopRecording() {
+
+    if (this.mediaRecorder) {
+
+      this.mediaRecorder.stop();
+
+      this.isRecording = false;
+
+    }
+
+  }
+
+
+  copyText(text: string) {
+
+    navigator.clipboard.writeText(text);
+
+  }
+
+
+  processAudio() {
+
+    if (!this.selectedFile) {
+
+      alert(
+        'Please upload or record audio'
+      );
+
+      return;
+
+    }
+
+    this.isProcessing = true;
+
+    this.errorMessage = '';
+
+    this.transcriptionService
+      .transcribeAudio(this.selectedFile)
+      .subscribe({
+
+        next: (response: AudioResponse) => {
+
+          console.log(response);
+
+          this.malayalamText =
+            response.malayalamText;
+
+          this.englishText =
+            response.englishText;
+
+            this.isProcessing=false;
+       
+
+        },
+
+        error: (error) => {
+
+          console.error(error);
+
+          this.errorMessage =
+            error?.error?.Message
+            || 'Failed to process audio';
+
+          this.isProcessing = false;
+          this.messageService.add({
+            severity:'warning',
+            detail:'API Limit is Exceeded',
+            summary:error.error.Message
+          })
+
+        }
+
+      });
+
+  }
+
+
+  speakEnglishText() {
+
+  if (!this.englishText) {
+
+    this.messageService.add({
+      severity:'info',
+      detail:'No English text available',
+    })
+
+    return;
+
+  }
+
+  // STOP PREVIOUS SPEECH
+
+  window.speechSynthesis.cancel();
+
+  // CREATE SPEECH
+
+  const speech = new SpeechSynthesisUtterance(
+    this.englishText
+  );
+
+  // SETTINGS
+
+  speech.lang = 'zh-CN';
+
+  speech.rate = 1;
+
+  speech.pitch = 1;
+
+  speech.volume = 1;
+
+  // PLAY
+
+  window.speechSynthesis.speak(speech);
+
+}
+
+playOriginalAudio() {
+
+  if (!this.audioUrl) {
+
+    this.messageService.add({
+      severity:'info',
+      detail:'No Audio Available'
+    })
+
+    return;
+
+  }
+
+  // STOP ENGLISH TTS
+
+  window.speechSynthesis.cancel();
+
+  // STOP PREVIOUS AUDIO
+
+  if (this.currentAudio) {
+
+    this.currentAudio.pause();
+
+    this.currentAudio.currentTime = 0;
+
+  }
+
+  // PLAY ORIGINAL AUDIO
+
+  this.currentAudio =
+    new Audio(this.audioUrl);
+
+  this.currentAudio.play();
+
+}
+
+stopAudio() {
+
+  // STOP SPEECH
+
+  window.speechSynthesis.cancel();
+
+  // STOP AUDIO
+
+  if (this.currentAudio) {
+
+    this.currentAudio.pause();
+
+    this.currentAudio.currentTime = 0;
+
+  }
+
+}
+
+loadHistory(item: HistoryItem): void {
+  // Reset processing & old audio
+  this.isProcessing = false;
+  this.audioUrl = null;
+  this.selectedFileName = null;
+
+  // Load the selected history text
+  this.malayalamText = item.malayalamText;
+  this.englishText   = item.englishText;
+
+  // Scroll results into view smoothly
+  setTimeout(() => {
+    document.getElementById('results-section')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+}
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  isSidebarOpen = true;
+
+toggleSidebar(): void {
+
+  this.isSidebarOpen =
+    !this.isSidebarOpen;
+
+}
+}
